@@ -2,12 +2,19 @@
 #include <stdlib.h>
 #include <time.h>
 
+/* This is the Encryption Machine. It is a simple program which takes input from a user in the form of text they wish to encrypt, then
+encrypts the input using a Caesar Cipher. The key for the Caesar Cipher (how many spaces to shift the input) is decided by a random number. 
+The program also includes functionality to decrypt encrypted input if given the appropriate key. This program was written primarily for educational purposes, 
+to demonstrate the functionality of contemporary encryption methods through a much simpler version. It also has practical uses for storing sensitive information,
+like passwords. */
+
 // Define constants to regulate ascii values
 #define MAX_ALPHA 90
 #define MIN_ALPHA 65
 #define MAX_BETA 122
 #define MIN_BETA 97
 
+// Function prototype declarations; required or recommended by varying C standards
 char* readInput(int* inputLength);
 char* encryptANDdecrypt(char* input, char* shifted, int randShiftBy, int encORdec);
 void printOutput(char* input, int inputLength, int key, int encORdec);
@@ -18,6 +25,7 @@ int charType(int specialChecked, int alphaChecked, int betaChecked);
 
 int main (int argc, char* argv) {
 	
+// Initial setup conditions. These variables will all be used to determine what the program does later on
 	srand(time(NULL));
 	int randShiftBy = rand() % 26 + 1;
 	int quit = 0;
@@ -28,14 +36,17 @@ int main (int argc, char* argv) {
 	char* userInput;
 	char* shifted;
 
+// Here is where the program first interacts with the user
 	printf("Welcome to the Encryption/Decryption Machine. Would you like to Encrypt (E), Decrypt (D), or Quit (Q)?\n");
 	
+// A loop to continue allowing the user to use the program until they decide to quiet via input
 	while (quit != 1) {
 		scanf("%c", &chooseMode);
 		getchar();
+// Based on user input, choose one of three modes, including quit
 		switch(chooseMode) {
 
-			case 'E':
+			case 'E': // Encrypt
 				encORdec = 0;
 
 				inputLength = 0;
@@ -48,7 +59,7 @@ int main (int argc, char* argv) {
 
 				printf("Choose E, D, or Q again.\n");
 				break;
-			case 'D':
+			case 'D': // Decrypt
 				encORdec = 1;
 
 				inputLength = 0;
@@ -65,12 +76,12 @@ int main (int argc, char* argv) {
 				printf("Choose E, D, or Q again.\n");
 				break;
 
-			case 'Q':
+			case 'Q': // Quit
 				printf("Quitting Now\n");
 				quit = 1;
 				break;
 
-			default:
+			default: // In case of unexpected input; error handling
 				printf("Invalid input. Try again.\n");
 				break;
 		}
@@ -80,7 +91,10 @@ int main (int argc, char* argv) {
 
 }
 
+// The following procedure/function was not copied, but was inspired/developed based on the work of another author. The author's work can be found here: https://beej.us/guide/bgc/
+// Specifically, section 12.5.1 contains instructions for the algorithm which inspired the readInput() function below.
 
+// Function to take in input from a user, regardless of length of input, and dynamically allocate exactly the right amount of memory
 char* readInput(int* lengthPointer) {
 	int index = 0;
 	*lengthPointer = index;
@@ -116,6 +130,7 @@ char* readInput(int* lengthPointer) {
 }
 
 
+// Function that does most of the work in the program; depending on value of encORdec, either encrypts or decrypts user input based on provided parameters
 char* encryptANDdecrypt(char* input, char* shifted, int randShiftBy, int encORdec) {
 	int index = 0;
 	int switchCheck;
@@ -187,6 +202,7 @@ char* encryptANDdecrypt(char* input, char* shifted, int randShiftBy, int encORde
 }
 
 
+// Function to deal with special characters not within the A-Z or a-z character set; by default, sets them all to '-' in encryption, ' ' in decryption
 int checkSpecial(char input, int encORdec) {
 	switch(encORdec) {
 		case 0: //Encrypt
@@ -212,6 +228,7 @@ int checkSpecial(char input, int encORdec) {
 }
 
 
+// Function to check if shifting the current character will carry us out of the A-Z charset; if so, the encryptANDdecrypt function will loop around to the appropriate end of the charset
 int checkOverALPHA(char input, int randShiftBy, int encORdec) {
 	switch(encORdec) {
 			case 0: //Encrypt
@@ -236,6 +253,8 @@ int checkOverALPHA(char input, int randShiftBy, int encORdec) {
 
 }
 
+
+// Same as the above function, but for the a-z charset
 int checkOverBETA(char input, int randShiftBy, int encORdec) {
 	switch(encORdec) {
 		case 0: //Encrypt
@@ -261,6 +280,7 @@ int checkOverBETA(char input, int randShiftBy, int encORdec) {
 }
 
 
+// A quick handler/abstracter to make the character checking more streamlined and easier to read
 int charType(int specialChecked, int alphaChecked, int betaChecked) {
 	if(specialChecked) {
 		return 1;
@@ -274,6 +294,7 @@ int charType(int specialChecked, int alphaChecked, int betaChecked) {
 }
 
 
+// Function to print out the encrypted or decrypt text, along with the key used for encryption/decryption
 void printOutput(char* input, int inputLength, int key, int encORdec) {
 	switch(encORdec) {
 		case 0: //Encrypt
